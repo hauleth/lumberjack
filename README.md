@@ -3,6 +3,8 @@
 Application for providing nice UI for logs, especially in development. The idea
 is to allow for digesting data from different sources, not only Erlang Logger.
 
+[![Showcase](https://img.youtube.com/vi/Bd5MDVkfDGE/0.jpg)](https://www.youtube.com/watch?v=Bd5MDVkfDGE)
+
 ## Goals
 
 The intended use case is to have single place to view logs from all components
