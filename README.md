@@ -39,11 +39,12 @@ config :lumberjack,
 
 ## TODO
 
-- Web UI via SSE or WebSockets (to be decided later, but I am in favour of SSE)
+- ~~Web UI via SSE or WebSockets (to be decided later, but I am in favour of SSE)~~
 - Parsers for the incoming messages, so it will be possible to extract levels
   out of the messages incoming from external sources
 - Fix bugs in file source (missing first message, missing messages on rotation)
 - Filtering incoming messages
+- Way to check metadata of the logged message
 
 ## License
 
