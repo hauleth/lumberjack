@@ -18,17 +18,18 @@ defmodule Lumberjack do
       <table>
         <thead>
           <tr>
-            <th class="src">Source</th>
-            <th class="tms">Time</th>
-            <th class="lvl">Level</th>
-            <th class="msg">Message</th>
+            <th class="src ui">Source</th>
+            <th class="tms ui">Time</th>
+            <th class="lvl ui">Level</th>
+            <th class="msg ui">Message</th>
           </tr>
         </thead>
         <tbody id="logs"></tbody>
       </table>
-      <div class="navigation">
+      <div class="navigation ui">
         <label for="autoscroll"><input type="checkbox" id="autoscroll" checked />&nbsp;Autoscroll</label>
         <label for="show_sources"><input type="checkbox" id="show_sources" />&nbsp;Show sources</label>
+        <label for="light"><input type="checkbox" id="light" />&nbsp;Light theme</label>
       </div>
     </body>
   </html>

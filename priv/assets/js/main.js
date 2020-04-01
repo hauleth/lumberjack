@@ -2,7 +2,7 @@
 
 const evtSrc = new EventSource('/stream')
 const $logList = document.getElementById('logs')
-const autoscroll = document.getElementById('autoscroll')
+const $autoscroll = document.getElementById('autoscroll')
 
 let id = undefined
 
@@ -34,19 +34,22 @@ evtSrc.addEventListener('log', (event) => {
   $row.classList.add(log.data.level)
   $logList.appendChild($row)
 
-  if (autoscroll.checked) {
+  if ($autoscroll.checked) {
     if (id) window.cancelAnimationFrame(id)
 
-    id = window.requestAnimationFrame(() => window.scrollTo(0, document.body.scrollHeight))
+    id = window.requestAnimationFrame(() => {
+      window.scrollTo(0, document.body.scrollHeight)
+      $autoscroll.checked = true
+    })
   }
 })
 
 // Show/hide sources
 
-const $head = document.head
 const $style = document.createElement('style')
 const $showSources = document.getElementById('show_sources')
-$head.appendChild($style)
+
+document.head.appendChild($style)
 
 $showSources.addEventListener('change', () => {
   if (!$showSources.checked && $style.sheet.rules[0]) {
@@ -56,3 +59,14 @@ $showSources.addEventListener('change', () => {
   }
 })
 
+// Theme toggle
+
+const $light = document.getElementById('light')
+
+$light.addEventListener('change', () => {
+  if ($light.checked) {
+    document.body.classList.add('light')
+  } else {
+    document.body.classList.remove('light')
+  }
+})

@@ -2,10 +2,17 @@
   --background: #333;
   --text: #bbb;
 
+  --ui: 0.6;
+
   --highlight: #39409b;
   --debug: #399b95;
   --warning: #9b9539;
   --error: #9b3940;
+}
+
+.light {
+  --background: #bbb;
+  --text: #333;
 }
 
 /* Colours */
@@ -33,6 +40,11 @@ body {
   padding: 0 0 3.5rem 0;
 }
 
+.ui {
+  background-color: var(--background);
+  filter: brightness(var(--ui));
+}
+
 table {
   width: 100%;
   text-align: left;
@@ -43,8 +55,6 @@ th {
   position: -webkit-sticky;
   position:         sticky;
   top: 0;
-  background-color: var(--background);
-  filter: brightness(0.6);
   padding: .5rem;
 }
 
@@ -54,7 +64,7 @@ tbody td {
 }
 
 tbody tr:hover {
-  filter: brightness(2);
+  font-weight: bold;
 }
 
 table .src { width: 10em; text-align: right; display: none; }
@@ -67,8 +77,6 @@ table .lvl { width: 6em; }
   width: 100%;
   padding: 1rem;
   display: block;
-  background-color: var(--background);
-  filter: brightness(0.6);
 }
 
 label {
