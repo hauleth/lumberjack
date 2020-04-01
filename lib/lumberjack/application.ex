@@ -9,8 +9,8 @@ defmodule Lumberjack.Application do
 
   def start(_type, _args) do
     children = [
+      Lumberjack.Stream,
       Lumberjack.Source,
-      {Registry, keys: :duplicate, name: Lumberjack.Registry},
       {Plug.Cowboy, scheme: :http, port: 4000, plug: Lumberjack.Router}
     ]
 

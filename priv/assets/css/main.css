@@ -1,0 +1,77 @@
+:root {
+  --background: #333;
+  --text: #bbb;
+
+  --highlight: #39409b;
+  --debug: #399b95;
+  --warning: #9b9539;
+  --error: #9b3940;
+}
+
+/* Colours */
+
+.debug {
+  color: var(--debug);
+}
+
+.warning {
+  color: var(--warning);
+}
+
+.error, .critical, .alert, .emergency {
+  color: var(--error);
+}
+
+/* General */
+
+body {
+  font-family: monospace;
+  color: var(--text);
+  background-color: var(--background);
+
+  margin: 0;
+  padding: 0 0 3.5rem 0;
+}
+
+table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+th {
+  position: -webkit-sticky;
+  position:         sticky;
+  top: 0;
+  background-color: var(--background);
+  filter: brightness(0.6);
+  padding: .5rem;
+}
+
+tbody td {
+  padding: .15rem .5rem;
+  vertical-align: top;
+}
+
+tbody tr:hover {
+  filter: brightness(2);
+}
+
+table .src { width: 10em; text-align: right; }
+table .tms { width: 15em; }
+table .lvl { width: 6em; }
+
+.navigation {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding: 1rem;
+  display: block;
+  background-color: var(--background);
+  filter: brightness(0.6);
+}
+
+label {
+  -webkit-user-select: none;
+          user-select: none;
+}

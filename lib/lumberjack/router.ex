@@ -3,7 +3,11 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 defmodule Lumberjack.Router do
+  @moduledoc false
+
   use Plug.Router
+
+  plug(Plug.Static, at: "/assets", from: "priv/assets")
 
   plug(Plug.RequestId)
 
@@ -16,24 +20,5 @@ defmodule Lumberjack.Router do
   plug(:match)
   plug(:dispatch)
 
-  get "/_logs" do
-    Registry.register(Lumberjack.Registry, :logs, [])
-
-    conn =
-      conn
-      |> put_resp_content_type("text/event-stream")
-      |> send_chunked(200)
-
-    loop(conn)
-  end
-
-  defp loop(conn) do
-    receive do
-      {:log, msg} ->
-        case chunk(conn, [Jason.encode_to_iodata!(msg), "\r\n"]) do
-          {:ok, conn} -> loop(conn)
-          {:error, :closed} -> conn
-        end
-    end
-  end
+  forward("/", to: Lumberjack)
 end

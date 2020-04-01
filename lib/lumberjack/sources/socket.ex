@@ -7,6 +7,7 @@ defmodule Lumberjack.Sources.Socket do
 
   @behaviour Lumberjack.Source
 
+  @doc false
   def install(opts) do
     type = Keyword.get(opts, :type, :udp)
     port = Keyword.fetch!(opts, :port)
@@ -16,25 +17,24 @@ defmodule Lumberjack.Sources.Socket do
     :ok
   end
 
-  def start_link(opts) do
-    GenServer.start_link(__MODULE__, opts)
-  end
+  @doc false
+  def start_link(opts), do: GenServer.start_link(__MODULE__, opts)
 
+  @doc false
   def init(%{type: type, port: port}) do
     {:ok, socket} = socket(type, port)
 
-    {:ok, socket}
+    {:ok, %{socket: socket, name: name(type, port)}}
   end
 
-  def handle_info({:udp, socket, _ip, _port, data}, socket) do
-    Registry.dispatch(Lumberjack.Registry, :logs, fn entries ->
-      for {pid, _} <- entries do
-        send(pid, {:log, data})
-      end
-    end)
+  def handle_info({:udp, socket, _ip, _port, data}, %{socket: socket, name: name} = state) do
+    Lumberjack.Source.log(name, :info, data)
 
-    {:noreply, socket}
+    {:noreply, state}
   end
 
   defp socket(:udp, port), do: :gen_udp.open(port, [:binary])
+
+  defp name(:udp, port), do: "UDP #{port}"
+  defp name(:tcp, port), do: "TCP #{port}"
 end

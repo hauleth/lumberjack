@@ -3,18 +3,65 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 defmodule Lumberjack.Source do
+  @moduledoc """
+  Definition of the log message source
+  """
+
   @supervisor __MODULE__.Supervisor
 
-  def child_spec(_opts) do
-    DynamicSupervisor.child_spec(strategy: :one_for_one, name: @supervisor)
-  end
-
-  def start_child(child_spec) do
-    DynamicSupervisor.start_child(@supervisor, child_spec)
-  end
+  @key __MODULE__
 
   @callback install(opts :: keyword()) :: :ok | {:error, term()}
 
+  @doc """
+  Dispatch log message
+  """
+  @spec log(source, level, ts, message, meta) :: :ok
+        when source: atom() | :unicode.chardata(),
+             level: :logger.level(),
+             ts: :logger.timestamp(),
+             message: :unicode.chardata(),
+             meta: map()
+  def log(source, level, ts \\ :logger.timestamp(), message, meta \\ %{}) do
+    Lumberjack.Stream.dispatch(
+      @key,
+      &send(&1, %Lumberjack.Event{
+        type: :log,
+        source: source,
+        timestamp: ts,
+        data: %{
+          msg: message,
+          level: level,
+          meta: meta
+        }
+      })
+    )
+  end
+
+  @doc false
+  def child_spec(_opts),
+    do: DynamicSupervisor.child_spec(strategy: :one_for_one, name: @supervisor)
+
+  @doc false
+  def start_child(child_spec), do: DynamicSupervisor.start_child(@supervisor, child_spec)
+
+  @doc false
+  def stream do
+    Lumberjack.Stream.register(@key)
+
+    Stream.resource(
+      fn -> :ok end,
+      fn _ ->
+        receive do
+          %Lumberjack.Event{} = msg -> {[msg], :ok}
+        end
+      end,
+      fn _ -> :ok end
+    )
+  end
+
+  # Install all sources defined in the application configuration
+  @doc false
   def install do
     :lumberjack
     |> Application.fetch_env!(:sources)

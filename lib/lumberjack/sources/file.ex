@@ -7,6 +7,7 @@ defmodule Lumberjack.Sources.File do
 
   @behaviour Lumberjack.Source
 
+  @doc false
   def install(opts) do
     dirs = Keyword.fetch!(opts, :dirs)
     {:ok, _pid} = Lumberjack.Source.start_child({__MODULE__, dirs})
@@ -14,10 +15,10 @@ defmodule Lumberjack.Sources.File do
     :ok
   end
 
-  def start_link(dirs) do
-    GenServer.start_link(__MODULE__, dirs)
-  end
+  @doc false
+  def start_link(dirs), do: GenServer.start_link(__MODULE__, dirs)
 
+  @doc false
   def init(dirs) do
     {:ok, watcher_pid} = FileSystem.start_link(dirs: dirs)
     FileSystem.subscribe(watcher_pid)
@@ -25,13 +26,13 @@ defmodule Lumberjack.Sources.File do
     {:ok, %{watcher_pid: watcher_pid, streams: %{}}}
   end
 
+  @doc false
   def handle_info(
         {:file_event, wpid, {path, _events}},
         %{watcher_pid: wpid, streams: streams} = state
       ) do
     stream =
       Map.get_lazy(streams, path, fn ->
-        IO.puts("Opening file #{path}")
         file = File.open!(path, ~w[read]a)
         :file.position(file, :eof)
 
@@ -40,11 +41,9 @@ defmodule Lumberjack.Sources.File do
 
     data = String.split(IO.read(stream, :all), ~r/\n+/, trim: true)
 
-    Registry.dispatch(Lumberjack.Registry, :logs, fn entries ->
-      for {pid, _} <- entries do
-        send(pid, {:log, data})
-      end
-    end)
+    for entry <- data do
+      Lumberjack.Source.log(path, :info, entry)
+    end
 
     {:noreply, %{state | streams: Map.put(streams, path, stream)}}
   end

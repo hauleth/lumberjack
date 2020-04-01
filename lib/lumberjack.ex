@@ -7,16 +7,55 @@ defmodule Lumberjack do
   Documentation for `Lumberjack`.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Lumberjack.hello()
-      :world
-
+  @html """
+  <html>
+    <head>
+      <title>Logs</title>
+      <link rel="stylesheet" href="/assets/css/main.css" />
+      <script src="/assets/js/main.js" defer async></script>
+    </head>
+    <body>
+      <table>
+        <thead>
+          <tr>
+            <th class="src">Source</th>
+            <th class="tms">Time</th>
+            <th class="lvl">Level</th>
+            <th class="msg">Message</th>
+          </tr>
+        </thead>
+        <tbody id="logs"></tbody>
+      </table>
+      <div class="navigation"><input type="checkbox" id="autoscroll" checked /><label for="autoscroll">&nbsp;Autoscroll</label></div>
+    </body>
+  </html>
   """
-  def hello do
-    :world
+
+  use Plug.Router
+
+  plug(:match)
+  plug(:dispatch)
+
+  get "/" do
+    conn
+    |> put_resp_content_type("text/html")
+    |> send_resp(200, @html)
   end
+
+  get "/stream" do
+    conn =
+      conn
+      |> put_resp_header("cache-control", "no-cache")
+      |> put_resp_content_type("text/event-stream")
+      |> send_chunked(200)
+
+    Enum.reduce_while(Lumberjack.stream(), conn, fn msg, conn ->
+      case chunk(conn, Lumberjack.Event.to_event(msg)) do
+        {:ok, conn} -> {:cont, conn}
+        {:error, :closed} -> {:halt, conn}
+      end
+    end)
+  end
+
+  defdelegate stream, to: Lumberjack.Source
 end
