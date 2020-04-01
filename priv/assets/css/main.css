@@ -1,6 +1,9 @@
 :root {
-  --background: #333;
-  --text: #bbb;
+  --dark: #333;
+  --light: #bbb;
+
+  --background: var(--dark);
+  --text: var(--light);
 
   --ui: 0.6;
 
@@ -11,8 +14,8 @@
 }
 
 .light {
-  --background: #bbb;
-  --text: #333;
+  --background: var(--light);
+  --text: var(--dark);
 }
 
 /* Colours */
@@ -25,8 +28,13 @@
   color: var(--warning);
 }
 
-.error, .critical, .alert, .emergency {
+.error {
   color: var(--error);
+}
+
+.critical, .alert, .emergency {
+  background-color: var(--error);
+  color: var(--dark);
 }
 
 /* General */
