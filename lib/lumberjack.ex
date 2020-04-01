@@ -26,7 +26,10 @@ defmodule Lumberjack do
         </thead>
         <tbody id="logs"></tbody>
       </table>
-      <div class="navigation"><input type="checkbox" id="autoscroll" checked /><label for="autoscroll">&nbsp;Autoscroll</label></div>
+      <div class="navigation">
+        <label for="autoscroll"><input type="checkbox" id="autoscroll" checked />&nbsp;Autoscroll
+        </label>
+      </div>
     </body>
   </html>
   """

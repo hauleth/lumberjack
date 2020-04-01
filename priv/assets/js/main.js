@@ -2,6 +2,8 @@ const evtSrc = new EventSource('/stream')
 const logList = document.getElementById("logs")
 const autoscroll = document.getElementById("autoscroll")
 
+let id = undefined
+
 const createRow = function (data) {
   const row = document.createElement("tr")
 
@@ -28,11 +30,11 @@ evtSrc.addEventListener("log", (event) => {
   ])
 
   row.classList.add(log.data.level)
+  logList.appendChild(row)
 
+  if (autoscroll.checked) {
+    if (id) window.cancelAnimationFrame(id)
 
-  window.requestAnimationFrame(() => {
-    logList.appendChild(row)
-
-    if (autoscroll.checked) window.scrollTo(0, document.body.scrollHeight)
-  })
+    id = window.requestAnimationFrame(() => window.scrollTo(0, document.body.scrollHeight))
+  }
 })

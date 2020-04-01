@@ -8,11 +8,12 @@ defmodule Lumberjack.Application do
   use Application
 
   def start(_type, _args) do
+    port = Application.get_env(:lumberjack, :port)
+
     children = [
       Lumberjack.Stream,
-      Lumberjack.Source,
-      {Plug.Cowboy, scheme: :http, port: 4000, plug: Lumberjack.Router}
-    ]
+      Lumberjack.Source
+    ] ++ server(port)
 
     opts = [strategy: :one_for_one, name: Lumberjack.Supervisor]
 
@@ -24,5 +25,12 @@ defmodule Lumberjack.Application do
       err ->
         err
     end
+  end
+
+  defp server(nil), do: []
+  defp server(port) when is_integer(port) do
+    [
+      {Plug.Cowboy, scheme: :http, port: 4000, plug: Lumberjack.Router}
+    ]
   end
 end
