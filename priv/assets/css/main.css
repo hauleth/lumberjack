@@ -57,7 +57,7 @@ tbody tr:hover {
   filter: brightness(2);
 }
 
-table .src { width: 10em; text-align: right; }
+table .src { width: 10em; text-align: right; display: none; }
 table .tms { width: 15em; }
 table .lvl { width: 6em; }
 
