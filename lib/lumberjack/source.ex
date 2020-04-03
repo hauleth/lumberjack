@@ -16,26 +16,8 @@ defmodule Lumberjack.Source do
   @doc """
   Dispatch log message
   """
-  @spec log(source, level, ts, message, meta) :: :ok
-        when source: atom() | :unicode.chardata(),
-             level: :logger.level(),
-             ts: :logger.timestamp(),
-             message: :unicode.chardata(),
-             meta: map()
-  def log(source, level, ts \\ :logger.timestamp(), message, meta \\ %{}) do
-    Lumberjack.Stream.dispatch(
-      @key,
-      &send(&1, %Lumberjack.Event{
-        type: :log,
-        source: source,
-        timestamp: ts,
-        data: %{
-          msg: message,
-          level: level,
-          meta: meta
-        }
-      })
-    )
+  def log(event) do
+    Lumberjack.Stream.dispatch(@key, &send(&1, event))
   end
 
   @doc false

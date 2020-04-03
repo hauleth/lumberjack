@@ -36,14 +36,22 @@ defmodule Lumberjack.Sources.Logger do
   def log(%{level: level, meta: meta} = event, %{formatter: {fmod, opts}}) do
     {ts, meta} = Map.pop!(meta, :time)
 
-    data =
+    msg =
       event
       |> fmod.format(opts)
       |> to_string()
 
     encoded = encode(meta)
 
-    Lumberjack.Source.log(:logger, level, ts, data, encoded)
+    Lumberjack.Source.log(%Lumberjack.Event{
+      timestamp: ts,
+      source: :logger,
+      data: %{
+        msg: msg,
+        level: level,
+        meta: encoded
+      }
+    })
   end
 
   defp encode(meta) when is_map(meta), do: Map.new(meta, &encode_keys/1)

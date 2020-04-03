@@ -8,6 +8,8 @@ defmodule Lumberjack.Event do
   @derive {Jason.Encoder, except: [:type]}
   defstruct [:source, :data, :timestamp, type: :log]
 
+  @type t :: %__MODULE__{}
+
   def to_event(log) do
     [
       "event: log\n",

@@ -11,8 +11,10 @@ defmodule Lumberjack.Sources.Socket do
   def install(opts) do
     type = Keyword.get(opts, :type, :udp)
     port = Keyword.fetch!(opts, :port)
+    parsers = Keyword.get(opts, :parsers, [])
 
-    {:ok, _pid} = Lumberjack.Source.start_child({__MODULE__, %{type: type, port: port}})
+    {:ok, _pid} =
+      Lumberjack.Source.start_child({__MODULE__, %{type: type, port: port, parsers: parsers}})
 
     :ok
   end
@@ -21,14 +23,22 @@ defmodule Lumberjack.Sources.Socket do
   def start_link(opts), do: GenServer.start_link(__MODULE__, opts)
 
   @doc false
-  def init(%{type: type, port: port}) do
+  def init(%{type: type, port: port, parsers: parsers}) do
     {:ok, socket} = socket(type, port)
 
-    {:ok, %{socket: socket, name: name(type, port)}}
+    {:ok, %{socket: socket, name: name(type, port), parsers: parsers}}
   end
 
-  def handle_info({:udp, socket, _ip, _port, data}, %{socket: socket, name: name} = state) do
-    Lumberjack.Source.log(name, :info, data)
+  def handle_info(
+        {:udp, socket, _ip, _port, data},
+        %{socket: socket, name: name, parsers: parsers} = state
+      ) do
+    event =
+      data
+      |> Lumberjack.Parser.parse(parsers)
+      |> struct(source: name)
+
+    Lumberjack.Source.log(event)
 
     {:noreply, state}
   end

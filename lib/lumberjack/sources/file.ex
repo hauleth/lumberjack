@@ -10,26 +10,31 @@ defmodule Lumberjack.Sources.File do
   @doc false
   def install(opts) do
     dirs = Keyword.fetch!(opts, :dirs)
-    {:ok, _pid} = Lumberjack.Source.start_child({__MODULE__, dirs})
+    parsers = Keyword.get(opts, :parsers, [])
+
+    {:ok, _pid} = Lumberjack.Source.start_child({__MODULE__, %{
+      dirs: dirs,
+      parsers: parsers
+    }})
 
     :ok
   end
 
   @doc false
-  def start_link(dirs), do: GenServer.start_link(__MODULE__, dirs)
+  def start_link(args), do: GenServer.start_link(__MODULE__, args)
 
   @doc false
-  def init(dirs) do
+  def init(%{dirs: dirs, parsers: parsers}) do
     {:ok, watcher_pid} = FileSystem.start_link(dirs: dirs)
     FileSystem.subscribe(watcher_pid)
 
-    {:ok, %{watcher_pid: watcher_pid, streams: %{}}}
+    {:ok, %{watcher_pid: watcher_pid, streams: %{}, parsers: parsers}}
   end
 
   @doc false
   def handle_info(
         {:file_event, wpid, {path, _events}},
-        %{watcher_pid: wpid, streams: streams} = state
+        %{watcher_pid: wpid, streams: streams, parsers: parsers} = state
       ) do
     stream =
       Map.get_lazy(streams, path, fn ->
@@ -42,7 +47,12 @@ defmodule Lumberjack.Sources.File do
     data = String.split(IO.read(stream, :all), ~r/\n+/, trim: true)
 
     for entry <- data do
-      Lumberjack.Source.log(path, :info, entry)
+      parsed =
+        entry
+        |> Lumberjack.Parser.parse(parsers)
+        |> struct(source: path)
+
+      Lumberjack.Source.log(parsed)
     end
 
     {:noreply, %{state | streams: Map.put(streams, path, stream)}}

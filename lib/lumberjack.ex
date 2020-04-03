@@ -10,7 +10,7 @@ defmodule Lumberjack do
   @html """
   <html>
     <head>
-      <title>Logs</title>
+      <title>I am lumberjack, and I am ok!</title>
       <link rel="stylesheet" href="/assets/css/main.css" />
       <script src="/assets/js/main.js" defer async></script>
     </head>
