@@ -92,3 +92,13 @@ label {
   -webkit-user-select: none;
           user-select: none;
 }
+
+.modal {
+  padding: 1em;
+  overflow: auto;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 20%;
+  height: 100%;
+}

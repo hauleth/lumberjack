@@ -1,10 +1,12 @@
 require Logger
 
 defmodule TestLogger do
+  require Logger
+
   def start do
     {:ok, socket} = :gen_udp.open(0)
 
-    {:ok, _pid} = Task.start(__MODULE__, :loop, [&:logger.log/2])
+    {:ok, _pid} = Task.start(__MODULE__, :loop, [fn level, msg -> Logger.log(level, msg) end])
 
     {:ok, _pid} =
       Task.start(__MODULE__, :loop, [

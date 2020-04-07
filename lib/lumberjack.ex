@@ -31,6 +31,7 @@ defmodule Lumberjack do
         <label for="show_sources"><input type="checkbox" id="show_sources" />&nbsp;Show sources</label>
         <label for="light"><input type="checkbox" id="light" />&nbsp;Light theme</label>
       </div>
+      <div id="modal" class="modal ui" hidden></div>
     </body>
   </html>
   """

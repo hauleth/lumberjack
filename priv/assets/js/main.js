@@ -1,7 +1,7 @@
 // Message handling
 
 const evtSrc = new EventSource('/stream')
-const $logList = document.getElementById('logs')
+const $logs = document.getElementById('logs')
 const $autoscroll = document.getElementById('autoscroll')
 
 let id = undefined
@@ -31,8 +31,9 @@ evtSrc.addEventListener('log', (event) => {
     {classes: ['msg'], data: log.data.msg}
   ])
 
+  $row.dataset.metadata = JSON.stringify(log.data.meta)
   $row.classList.add(log.data.level)
-  $logList.appendChild($row)
+  $logs.appendChild($row)
 
   if ($autoscroll.checked) {
     if (id) window.cancelAnimationFrame(id)
@@ -69,4 +70,20 @@ $light.addEventListener('change', () => {
   } else {
     document.body.classList.remove('light')
   }
+})
+
+// Modal
+
+const $modal = document.getElementById('modal')
+const $json = document.createElement('pre')
+
+$modal.appendChild($json)
+
+$modal.addEventListener('click', () => $modal.hidden = true)
+
+$logs.addEventListener('click', event => {
+  const meta = JSON.parse(event.target.parentNode.dataset.metadata)
+
+  $modal.hidden = false
+  $json.innerText = JSON.stringify(meta, null, 2)
 })
