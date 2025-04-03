@@ -8,7 +8,8 @@ defmodule Lumberjack.MixProject do
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
-      docs: docs()
+      docs: docs(),
+      package: package()
     ]
   end
 
@@ -20,6 +21,16 @@ defmodule Lumberjack.MixProject do
       env: [
         sources: [Lumberjack.Sources.Logger]
       ]
+    ]
+  end
+
+  defp package do
+    [
+      description: "Web based log viewer for Elixir applications",
+      licenses: ~w[MPL-2.0],
+      links: %{
+        "GitHub" => "https://github.com/hauleth/lumberjack"
+      }
     ]
   end
 
@@ -37,7 +48,7 @@ defmodule Lumberjack.MixProject do
     [
       {:plug_cowboy, "~> 2.0"},
       {:jason, "~> 1.0"},
-      {:file_system, "~> 0.2"},
+      {:file_system, "~> 0.2 or ~> 1.0"},
 
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
